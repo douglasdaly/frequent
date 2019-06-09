@@ -1,0 +1,27 @@
+Usage: make [target]
+
+Available targets:
+  authors-draft                  Generates the draft AUTHORS file
+  authors                        Generates the AUTHORS file
+  build                          Builds the library package
+  changelog-draft                Generates the draft new CHANGELOG.draft.md file
+  changelog                      Generates the new CHANGELOG.md file
+  changes-draft                  Generates the draft changes from the todo files
+  changes                        Generates the changes files from the todo files
+  check-build                    Check the built packages prior to uploading
+  clean-build                    Clean out the compiled package files
+  clean                          Delete all compiled Python files or temp files
+  clean-docs                     Cleans the generated documentation
+  coverage                       Runs code coverage checks over the codebase
+  docs                           Generates the sphinx HTML documentation
+  generate-docs                  Generates the documentation files from the source files
+  help                           Displays this help message
+  lint                           Lint using flake8
+  requirements                   Installs Python dependencies
+  test                           Run the unit tests over the project
+  test-tox                       Run the tox unit tests over the project
+  test-watch                     Run pytest-watch to run tests on project changes
+  tox-rebuild                    Rebuilds the tox environments
+  update-requirements            Updates the project's dependencies
+  upload                         Uploads the package to the PyPI server
+

@@ -1,0 +1,30 @@
+language: python
+sudo: false
+cache: pip
+dist: trusty
+
+matrix:
+  fast_finish: true
+
+branches:
+  only:
+  - master
+  - develop
+  - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+install:
+  - "pip install --upgrade pip pipenv python-coveralls"
+  - "pipenv install --dev"
+  - "pipenv run pip install --upgrade -e .[tests]"
+script:
+  - "pytest --cov=src/frequent"
+after_success:
+  - coveralls
+
+jobs:
+  include:
+    - stage: test
+      python: "3.7"
+      dist: xenial
+      sudo: required
+    - python: "3.6"

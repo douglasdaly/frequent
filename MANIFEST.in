@@ -1,0 +1,31 @@
+include AUTHORS LICENSE* README*
+include CHANGELOG.*
+
+
+exclude .editorconfig
+exclude *.env
+exclude .envrc
+exclude .coveragerc
+exclude .readthedocs.yml
+exclude .travis.yml
+exclude Makefile
+exclude Pipfile*
+exclude pyproject.toml
+exclude pytest.ini
+exclude requirements*.txt
+exclude tox.ini
+
+
+
+recursive-include docs Makefile *.bat *.py *.rst
+recursive-include docs *.png *.txt
+recursive-exclude docs requirements*.txt
+recursive-include docs/_templates *.html
+recursive-include docs/_static *.js *.css *.png
+
+prune .github
+prune docs/_build
+prune changes
+prune tasks
+prune tests
+prune todos
