@@ -231,7 +231,7 @@ def todos(ctx, draft=False):
         cnt += 1
 
     if cnt > 0:
-        tmp_str = '%s new items'
+        tmp_str = '%s new items' % cnt
         if draft:
             tmp_str = 'Would have added %s' % tmp_str
         else:

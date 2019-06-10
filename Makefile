@@ -99,6 +99,21 @@ PYTEST := $(RUN_PRE) $(PYTEST)
 TOX := $(RUN_PRE) $(TOX)
 TWINE := $(RUN_PRE) $(TWINE)
 
+define BROWSER_PYSCRIPT
+import os, webbrowser, sys
+
+try:
+	from urllib import pathname2url
+except:
+	from urllib.request import pathname2url
+
+webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
+endef
+export BROWSER_PYSCRIPT
+
+BROWSER := $(PYTHON) -c "$$BROWSER_PYSCRIPT"
+
+
 ###############################################################################
 # COMMANDS                                                                    #
 ###############################################################################
@@ -122,7 +137,9 @@ help: ## Displays this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo ''
 
-clean: ## Delete all compiled Python files or temp files
+clean: clean-py clean-docs clean-build ## Cleans all project artifacts.
+
+clean-py: ## Delete all compiled Python files or temp files
 	@rm -rf $(GARBAGE)
 
 # Requirements
@@ -140,8 +157,10 @@ generate-requirements:
 
 # Documentation
 
-docs: ## Generates the sphinx HTML documentation
-	@cd docs/ && $(RUN_PRE) make html
+docs: ## Generate Sphinx HTML documentation
+	$(RUN_PRE) $(MAKE) -C docs clean
+	$(RUN_PRE) $(MAKE) -C docs html
+	$(BROWSER) docs/_build/html/index.html
 
 clean-docs: ## Cleans the generated documentation
 	@cd docs/ && $(RUN_PRE) make clean
@@ -150,6 +169,7 @@ clean-docs: ## Cleans the generated documentation
 	$(INVOKE) docs.clean-apidocs
 
 generate-docs: -clean-apidoc ## Generates the documentation files from the source files
+	rm -f docs/frequent.rst
 	@cd docs/ && $(RUN_PRE) sphinx-apidoc -e -M -o api ../src/frequent
 	$(INVOKE) docs.generate-make
 

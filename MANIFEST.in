@@ -1,7 +1,6 @@
 include AUTHORS LICENSE* README*
 include CHANGELOG.*
 
-
 exclude .editorconfig
 exclude *.env
 exclude .envrc
@@ -14,8 +13,6 @@ exclude pyproject.toml
 exclude pytest.ini
 exclude requirements*.txt
 exclude tox.ini
-
-
 
 recursive-include docs Makefile *.bat *.py *.rst
 recursive-include docs *.png *.txt

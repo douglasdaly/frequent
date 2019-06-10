@@ -50,11 +50,6 @@ setup(
     version=VERSION,
     package_dir={'': 'src'},
     packages=find_packages('src', include=['frequent', 'frequent.*']),
-    entry_points={
-        "console_scripts": [
-            "frequent=frequent.cli:cli",
-        ]
-    },
 
     include_package_data=True,
     package_data={

@@ -10,10 +10,11 @@ Available targets:
   changes                        Generates the changes files from the todo files
   check-build                    Check the built packages prior to uploading
   clean-build                    Clean out the compiled package files
-  clean                          Delete all compiled Python files or temp files
+  clean                          Cleans all project artifacts.
   clean-docs                     Cleans the generated documentation
+  clean-py                       Delete all compiled Python files or temp files
   coverage                       Runs code coverage checks over the codebase
-  docs                           Generates the sphinx HTML documentation
+  docs                           Generate Sphinx HTML documentation
   generate-docs                  Generates the documentation files from the source files
   help                           Displays this help message
   lint                           Lint using flake8

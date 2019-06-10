@@ -1,14 +1,14 @@
-frequent package
-================
+frequent
+========
 
 .. automodule:: frequent
    :members:
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Submodules
+----------
 
 .. toctree::
 
-   frequent.cli
+   frequent.config

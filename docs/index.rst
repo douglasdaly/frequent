@@ -3,30 +3,46 @@ Frequent
 ########
 
 *Frequently used components for Python projects.*
-|pypi| |nbsp| |travis| |nbsp| |cov| |nbsp| |docs| |nbsp| |pyvers| Installation
+|pypi| |nbsp| |travis| |nbsp| |cov| |nbsp| |docs| |nbsp| |pyvers|
+
+
+About
+=====
+
+I found myself copying/re-writing certain components for my projects
+over and over again.  This library is an attempt to take some of the
+components I find myself needing frequently and package them up in a
+convenient and easy-to-use manner.
+
+Features
+--------
+
+- ``config`` for global configuration/settings management.
+
+
+Installation
 ============
 
-Install with your favorite package manager, for instance, ``pipenv``:
+You have a few options for installing/using `frequent`.  The first is to
+install using your package manager of choice, `pipenv` for instance:
 
 .. code-block:: bash
 
     $ pipenv install frequent
 
 
-About
-=====
+However, taking a cue from the excellent `boltons`_ package, each
+component is self-contained in its respective file/folder allowing for
+easy vendorization.  Components are not dependent on one another and
+rely solely on the standard library.  This makes vendorization of a
+component as simple as copying just the file/folder for the component(s)
+that you need.
 
-*Describe your project here.*
+.. _boltons: https://github.com/mahmoud/boltons
 
 
-.. toctree::
-    :maxdepth: 2
-    :caption: Getting Started
-    :hidden:
-
-    installation
-    quickstart
-
+Contents
+========
 
 .. toctree::
     :maxdepth: 2
@@ -39,10 +55,12 @@ About
     :caption: Reference
     :hidden:
 
-    api/modulescontributing
+    api/modules
+    contributing
     conduct
     authors
-    development/development.mainchangelogs/changelogs
+    development/development.main
+    changelogs/changelogs
     license
 
 
@@ -52,6 +70,7 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
 .. |pyvers| image:: https://img.shields.io/pypi/pyversions/frequent.svg
     :target: https://pypi.org/projects/frequent/
     :alt: Supported Python Versions

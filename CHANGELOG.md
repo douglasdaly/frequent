@@ -6,3 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [//]: # (BEGIN)
 
+## \[v0.0.1\] - 2019-06-09
+
+### Added
+
+- config module for global configuration settings
+- Initial documentation
+
+

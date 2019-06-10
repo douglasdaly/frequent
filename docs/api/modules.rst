@@ -1,5 +1,5 @@
-frequent
-========
+API
+===
 
 .. toctree::
    :maxdepth: 4
