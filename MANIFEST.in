@@ -14,15 +14,9 @@ exclude pytest.ini
 exclude requirements*.txt
 exclude tox.ini
 
-recursive-include docs Makefile *.bat *.py *.rst
-recursive-include docs *.png *.txt
-recursive-exclude docs requirements*.txt
-recursive-include docs/_templates *.html
-recursive-include docs/_static *.js *.css *.png
-
 prune .githooks
 prune .github
-prune docs/_build
+prune docs
 prune changes
 prune examples
 prune tasks
