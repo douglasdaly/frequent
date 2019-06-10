@@ -6,8 +6,6 @@ frequent
    :undoc-members:
    :show-inheritance:
 
-Submodules
-----------
 
 .. toctree::
 

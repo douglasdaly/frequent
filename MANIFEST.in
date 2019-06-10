@@ -20,9 +20,11 @@ recursive-exclude docs requirements*.txt
 recursive-include docs/_templates *.html
 recursive-include docs/_static *.js *.css *.png
 
+prune .githooks
 prune .github
 prune docs/_build
 prune changes
+prune examples
 prune tasks
 prune tests
 prune todos
