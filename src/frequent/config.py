@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+#
+#   This module is part of the frequent project:
+#       https://github.com/douglasdaly/frequent-py
+#
 """
 Configuration module for global configuration settings.
 """
