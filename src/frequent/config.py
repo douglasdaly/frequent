@@ -13,6 +13,7 @@ from functools import wraps
 import json
 from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import Iterator as T_Iterator
 from typing import Tuple
 from typing import Type
@@ -123,7 +124,7 @@ class Configuration(MutableMapping):
         """Clears all the settings stored in this configuration."""
         return self._storage.clear()
 
-    def copy(self) -> Type['Configuration']:
+    def copy(self) -> 'Configuration':
         """Creates a copy of this configuration object.
 
         Returns
@@ -136,7 +137,7 @@ class Configuration(MutableMapping):
         rv.update(copy(self._storage))
         return rv
 
-    def dumps(self, compact=True, **kwargs) -> str:
+    def dumps(self, compact: bool = True, **kwargs) -> str:
         """Serializes this configuration object to a string.
 
         The default method uses the built-in python json library to
@@ -164,7 +165,7 @@ class Configuration(MutableMapping):
         return json.dumps(self.to_dict(), **json_kws)
 
     @classmethod
-    def loads(cls, text: str, **kwargs) -> Type['Configuration']:
+    def loads(cls, text: str, **kwargs) -> 'Configuration':
         """Creates a new configuration from the given string data.
 
         Parameters
@@ -196,7 +197,7 @@ class Configuration(MutableMapping):
         return
 
     @classmethod
-    def load(cls, path: str, **kwargs) -> Type['Configuration']:
+    def load(cls, path: str, **kwargs) -> 'Configuration':
         """Loads a configuration object from the file path specified.
 
         Parameters
@@ -216,7 +217,7 @@ class Configuration(MutableMapping):
         return cls.loads(''.join(text), **kwargs)
 
     @classmethod
-    def from_dict(cls, data: dict) -> Type['Configuration']:
+    def from_dict(cls, data: dict) -> 'Configuration':
         """Creates a configuration object from the given :obj:`dict`.
 
         Parameters
@@ -237,7 +238,7 @@ class Configuration(MutableMapping):
             rv[k] = v
         return rv
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict:
         """Converts this configuration object to a standard :obj:`dict`.
 
         Returns
@@ -348,12 +349,13 @@ def set_config(name: str, value: Any) -> None:
 def clear_config() -> None:
     """Clears the currently-set configuration."""
     global _global_config
+    _global_config.clear()
     _global_config = None
     return
 
 
 @contextmanager
-def temp_config(**settings) -> Type[Configuration]:
+def temp_config(**settings) -> Configuration:
     """Gets a context with a temporary configuration.
 
     Any changes made to the configuration via calls to :obj:`set_config`
