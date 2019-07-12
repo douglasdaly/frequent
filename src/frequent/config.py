@@ -5,6 +5,44 @@
 #
 """
 Configuration module for global configuration settings.
+
+These functions can be used to manage a global configuration state for
+your applications.  The :obj:`Configuration` object manages this global
+state and includes the ability to `save` and `load` from a JSON file.
+This class can be modified to serialize to any format you want by
+overloading the `loads` and `dumps` methods (which will automatically
+pass through to the `save` and `load` calls).
+
+
+Examples
+--------
+
+Set or get a setting:
+
+>>> set_config('files.path', '/home/doug/frequent-files/')
+>>> get_config('files.path')
+'/home/doug/frequent-files/'
+>>> get_config('files')
+{'path': '/home/doug/frequent-files/'}
+
+Save to file:
+
+>>> save_config('/home/doug/config.json')
+
+Load from file:
+
+>>> load_config('/home/doug/config.json')
+>>> get_config('files.path')
+'/home/doug/frequent-files/'
+
+Set temporary settings:
+
+>>> with temp_config(files={'path': '/home/doug/tmp'}):
+...     print(get_config('files.path'))
+'/home/doug/tmp'
+>>> get_config('files.path')
+'/home/doug/frequent-files/'
+
 """
 from collections.abc import MutableMapping
 from contextlib import contextmanager
@@ -15,6 +53,7 @@ from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import Iterator as T_Iterator
+from typing import Optional
 from typing import Tuple
 from typing import Type
 
@@ -22,15 +61,16 @@ __all__ = [
     'Configuration',
     'get_config',
     'load_config',
+    'save_config',
     'set_config',
     'temp_config',
 ]
 
 
-_global_config = None
+_GLOBAL_CONFIG: Optional['Configuration'] = None
 
 
-def _make_sentinel(name='_MISSING'):
+def _make_sentinel(name: str = '_MISSING') -> 'Sentinel':
     """Creates a new sentinel object, code adapted from boltons:
         https://github.com/mahmoud/boltons/
     """
@@ -55,6 +95,45 @@ _MISSING = _make_sentinel()
 class Configuration(MutableMapping):
     """
     Configuration storage object.
+
+    This object is basically a :obj:`dict` with some additional bells
+    and whistles, including:
+
+    - The ability to access/modify items like attributes.
+    - Serialize to/from strings via `dumps` and `loads`.
+    - `save` and `load` to/from files.
+    - Easily convert standard :obj:`dict` objects with `to_dict` and
+      `from_dict`.
+
+    Examples
+    --------
+    This object works like a :obj:`dict`, where settings can be
+    retrieved and set using:
+
+    >>> config = Configuration()
+    >>> config['answer'] = 42
+    >>> config['answer']
+    42
+
+    Additionally, you can nest settings using the `.` as a seperator,
+    for instance:
+
+    >>> config['nested.setting'] = 'value'
+    >>> config['nested']
+    {'setting': 'value'}
+    >>> config['nested.setting']
+    'value'
+    >>> config['nested']['setting']
+    'value'
+
+    Furthermore, you can work with settings as if they were attributes:
+
+    >>> config.nested.setting
+    'value'
+    >>> config.dirs.temp = '/home/doug/tmp'
+    >>> config['dirs.temp']
+    '/home/doug/tmp'
+
     """
     __key_seperator__ = '.'
 
@@ -161,7 +240,6 @@ class Configuration(MutableMapping):
         if not compact:
             json_kws['indent'] = 2
         json_kws.update(kwargs)
-
         return json.dumps(self.to_dict(), **json_kws)
 
     @classmethod
@@ -217,7 +295,7 @@ class Configuration(MutableMapping):
         return cls.loads(''.join(text), **kwargs)
 
     @classmethod
-    def from_dict(cls, data: dict) -> 'Configuration':
+    def from_dict(cls, data: Dict[str, Any]) -> 'Configuration':
         """Creates a configuration object from the given :obj:`dict`.
 
         Parameters
@@ -238,7 +316,7 @@ class Configuration(MutableMapping):
             rv[k] = v
         return rv
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> Dict[str, Any]:
         """Converts this configuration object to a standard :obj:`dict`.
 
         Returns
@@ -266,7 +344,7 @@ class Configuration(MutableMapping):
 
 
 def load_config(
-        path: str = None, config_cls: Type[Configuration] = Configuration
+    path: str = None, config_cls: Type[Configuration] = Configuration
 ) -> None:
     """Loads the global configuration from the given file path.
 
@@ -280,23 +358,37 @@ def load_config(
         standard :obj:`Configuration` class).
 
     """
-    global _global_config
+    global _GLOBAL_CONFIG
 
     if path:
-        _global_config = config_cls.load(path)
+        _GLOBAL_CONFIG = config_cls.load(path)
     else:
-        _global_config = config_cls()
+        _GLOBAL_CONFIG = config_cls()
     return
 
 
 def _ensure_config(f: Callable) -> Callable:
     @wraps(f)
     def wrapper(*args, **kwargs):
-        global _global_config
-        if _global_config is None:
+        global _GLOBAL_CONFIG
+        if _GLOBAL_CONFIG is None:
             load_config()
         return f(*args, **kwargs)
     return wrapper
+
+
+@_ensure_config
+def save_config(path: str) -> None:
+    """Saves the current global configuration to the given file path.
+
+    Parameters
+    ----------
+    path : str
+        The file path to save the configuration to.
+
+    """
+    global _GLOBAL_CONFIG
+    return _GLOBAL_CONFIG.save(path)
 
 
 @_ensure_config
@@ -319,14 +411,14 @@ def get_config(name: str = None, default: Any = _MISSING) -> Any:
         requested.
 
     """
-    global _global_config
+    global _GLOBAL_CONFIG
 
     if not name:
-        return _global_config.copy()
+        return _GLOBAL_CONFIG.copy()
 
     if default == _MISSING:
-        return _global_config[name]
-    return _global_config.get(name, default)
+        return _GLOBAL_CONFIG[name]
+    return _GLOBAL_CONFIG.get(name, default)
 
 
 @_ensure_config
@@ -341,20 +433,22 @@ def set_config(name: str, value: Any) -> None:
         The value to set for the given `name`.
 
     """
-    global _global_config
-    _global_config[name] = value
+    global _GLOBAL_CONFIG
+    _GLOBAL_CONFIG[name] = value
     return
 
 
 def clear_config() -> None:
-    """Clears the currently-set configuration."""
-    global _global_config
-    _global_config.clear()
-    _global_config = None
+    """Clears the currently-set global configuration."""
+    global _GLOBAL_CONFIG
+    if _GLOBAL_CONFIG is not None:
+        _GLOBAL_CONFIG.clear()
+        _GLOBAL_CONFIG = None
     return
 
 
 @contextmanager
+@_ensure_config
 def temp_config(**settings) -> Configuration:
     """Gets a context with a temporary configuration.
 
@@ -375,15 +469,14 @@ def temp_config(**settings) -> Configuration:
         The temporary configuration object.
 
     """
-    global _global_config
+    global _GLOBAL_CONFIG
 
-    curr_config = _global_config.copy()
+    curr_config = _GLOBAL_CONFIG.copy()
     try:
         for k, v in settings.items():
             set_config(k, v)
-        yield _global_config.copy()
+        yield _GLOBAL_CONFIG.copy()
     finally:
-        _global_config = curr_config
-
+        _GLOBAL_CONFIG = curr_config
     return
 

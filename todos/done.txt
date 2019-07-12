@@ -1,0 +1,3 @@
+x 2019-07-11 Usage documentation for config module
+x 2019-07-11 Singleton metaclass +add
+x 2019-07-11 `save_config` method in `config` module +add

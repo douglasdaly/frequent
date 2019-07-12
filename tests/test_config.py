@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Unit tests for the config module.
+Unit tests for the `config` module.
 """
 import os
 from tempfile import mkstemp
@@ -10,7 +10,7 @@ from frequent import config
 
 class TestConfiguration(object):
     """
-    Tests for the Configuration class
+    Tests for the :obj:`Configuration` class.
     """
 
     def test_usage(self):

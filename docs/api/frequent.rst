@@ -10,3 +10,4 @@ frequent
 .. toctree::
 
    frequent.config
+   frequent.singleton

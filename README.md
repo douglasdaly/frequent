@@ -28,7 +28,7 @@ package, each component is self-contained in its respective file/folder
 allowing for easy vendorization.  Components are not dependent on one
 another and rely solely on the standard library.  This makes
 vendorization of a component as simple as copying just the file/folder
-for the component(s) that you need.
+for the component(s) that you need (same goes for the unit tests).
 
 
 ## About
@@ -41,6 +41,7 @@ convenient and easy-to-use manner.
 ### Features
 
 - ``config``: for global configuration/settings management.
+- ``singleton``: for singleton classes.
 
 
 ## License
