@@ -21,7 +21,7 @@ class BaseClass(object):
 class SingleClass(BaseClass, metaclass=Singleton):
 
     def __init__(
-        self, *args, d: Optional[str] = None, **kwargs
+        self, *args, d: Optional[float] = None, **kwargs
     ) -> None:
         self.d = d
         return super().__init__(*args, **kwargs)

@@ -12,12 +12,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 from typing import Iterator
-from typing import Mapping as T_Mapping
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Type
-from typing import Union
 from uuid import UUID
 from uuid import uuid1
 

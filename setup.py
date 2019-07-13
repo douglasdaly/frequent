@@ -6,18 +6,11 @@ Incorporates code from:
     https://github.com/sarugaku/cookiecutter-python-package
 
 """
-#
-#   Imports
-#
 import ast
 import os
 
 from setuptools import setup, find_packages
 
-
-#
-#   Configuration
-#
 
 ROOT = os.path.dirname(__file__)
 
@@ -36,14 +29,7 @@ if VERSION is None:
 
 PYTHON_REQUIRES = ">=3.5"
 
-REQUIRES = [
-    'click',
-]
-
-
-#
-#   Setup
-#
+REQUIRES = []
 
 setup(
     name=PACKAGE_NAME,

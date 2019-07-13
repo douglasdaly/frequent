@@ -1,3 +1,4 @@
 Messaging framework skeleton +add
 Unit of work base components +add
 Object repository base components +add
+Fix messaging.message decorator to pass MyPy tests
