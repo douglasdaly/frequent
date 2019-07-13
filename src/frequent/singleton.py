@@ -5,6 +5,38 @@
 #
 """
 Singleton utility metaclass.
+
+Simply add it to any class you want to behave like a singleton via the
+`metaclass`:
+
+.. code-block:: python
+
+    class MyClass(SomeBaseClass, metaclass=Singleton):
+
+        def __init__(self, x: int) -> None:
+            self.x = x
+            return
+
+Examples
+--------
+>>> my_instance = MyClass(42)
+>>> my_instance.x
+42
+>>> another_instance = MyClass(43)
+>>> another_instance.x
+42
+
+Note that values set in subsequent calls to `__init__` will have no
+effect on the attribute.  To change the attribute do so on any of
+the instances:
+
+>>> another_instance.x = 43
+>>> my_instance.x
+43
+>>> my_instance.x = 42
+>>> another_instance.x
+42
+
 """
 from abc import ABC
 from typing import Any
@@ -15,39 +47,6 @@ from weakref import WeakValueDictionary
 class Singleton(type):
     """
     Metaclass for singleton objects.
-
-    Example
-    -------
-    This class is easy to use:
-
-    .. code-block:: python
-
-        class MyClass(SomeBaseClass, metaclass=Singleton):
-
-            def __init__(self, x: int) -> None:
-                self.x = x
-                return
-
-    Note the behavior of subsequent calls:
-
-    >>> my_instance = MyClass(42)
-    >>> my_instance.x
-    42
-    >>> another_instance = MyClass(43)
-    >>> another_instance.x
-    42
-
-    Note that values set in subsequent calls to `__init__` will have no
-    effect on the attribute.  To change the attribute do so on any of
-    the instances:
-
-    >>> another_instance.x = 43
-    >>> my_instance.x
-    43
-    >>> my_instance.x = 42
-    >>> another_instance.x
-    42
-
     """
     __instances = WeakValueDictionary()
 

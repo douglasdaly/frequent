@@ -41,6 +41,7 @@ convenient and easy-to-use manner.
 ### Features
 
 - ``config``: for global configuration/settings management.
+- ``messaging``: components for creating custom messaging frameworks.
 - ``singleton``: for singleton classes.
 
 

@@ -268,6 +268,12 @@ class Configuration(MutableMapping):
         ----------
         path : str
             File path to save the configuration object to.
+        kwargs : optional
+            Additional parameters to pass through to the `dumps` call.
+
+        See Also
+        --------
+        dumps
 
         """
         with open(path, 'w') as fout:
@@ -282,12 +288,18 @@ class Configuration(MutableMapping):
         ----------
         path : str
             File path to load the configuration object from.
+        kwargs : optional
+            Additional parameters to pass through to the `loads` call.
 
         Returns
         -------
         Configuration
             The :obj:`Configuration` object loaded from the `path`
             given.
+
+        See Also
+        --------
+        loads
 
         """
         with open(path, 'r') as fin:
@@ -412,10 +424,8 @@ def get_config(name: str = None, default: Any = _MISSING) -> Any:
 
     """
     global _GLOBAL_CONFIG
-
     if not name:
         return _GLOBAL_CONFIG.copy()
-
     if default == _MISSING:
         return _GLOBAL_CONFIG[name]
     return _GLOBAL_CONFIG.get(name, default)
@@ -459,9 +469,9 @@ def temp_config(**settings) -> Configuration:
 
     Parameters
     ----------
-    settings : dict, optional
-        Any temporary settings to set in the new, temporary
-        configuration context.
+    settings : optional
+        Any temporary settings to set in the temporary configuration
+        context.
 
     Yields
     ------
@@ -470,7 +480,6 @@ def temp_config(**settings) -> Configuration:
 
     """
     global _GLOBAL_CONFIG
-
     curr_config = _GLOBAL_CONFIG.copy()
     try:
         for k, v in settings.items():
