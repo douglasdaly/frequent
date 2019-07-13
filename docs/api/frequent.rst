@@ -10,3 +10,7 @@ frequent
 .. toctree::
 
    frequent.config
+   frequent.messaging
+   frequent.repository
+   frequent.singleton
+   frequent.unit_of_work

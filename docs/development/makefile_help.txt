@@ -21,6 +21,7 @@ Available targets:
   requirements                   Installs Python dependencies
   test                           Run the unit tests over the project
   test-tox                       Run the tox unit tests over the project
+  test-types                     Run the unit tests (with MyPy type checks) over the project.
   test-watch                     Run pytest-watch to run tests on project changes
   tox-rebuild                    Rebuilds the tox environments
   update-requirements            Updates the project's dependencies

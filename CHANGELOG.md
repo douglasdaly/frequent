@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [//]: # (BEGIN)
 
+## \[0.1.0\] - 2019-07-13
+
+### Added
+
+- Singleton metaclass
+- save\_config method in config module
+- Messaging framework skeleton
+- Object repository base components
+- Unit of work base components
+
+
 ## \[v0.0.1\] - 2019-06-09
 
 ### Added
