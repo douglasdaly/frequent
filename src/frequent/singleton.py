@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 #
-#   This module is part of the frequent project:
+#   This module is part of the Frequent project, Copyright (C) 2019,
+#   Douglas Daly.  The Frequent package is free software, licensed under
+#   the MIT License.
+#
+#   Source Code:
 #       https://github.com/douglasdaly/frequent-py
+#   Documentation:
+#       https://frequent-py.readthedocs.io/en/latest
+#   License:
+#       https://frequent-py.readthedocs.io/en/latest/license.html
 #
 """
 Singleton utility metaclass.
@@ -38,9 +46,6 @@ the instances:
 42
 
 """
-from abc import ABC
-from typing import Any
-from typing import Mapping
 from weakref import WeakValueDictionary
 
 

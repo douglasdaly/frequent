@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
+#
+#   This module is part of the Frequent project, Copyright (C) 2019,
+#   Douglas Daly.  The Frequent package is free software, licensed under
+#   the MIT License.
+#
+#   Source Code:
+#       https://github.com/douglasdaly/frequent-py
+#   Documentation:
+#       https://frequent-py.readthedocs.io/en/latest
+#   License:
+#       https://frequent-py.readthedocs.io/en/latest/license.html
+#
 """
-Messaging framework skeleton.
-
-The components of this class can be used to quickly build out a
-messaging system.
+Messaging framework foundations.
 """
 from abc import ABC
 from abc import ABCMeta
@@ -47,20 +56,62 @@ class Message(ABC):
 
     >>> msg = DirectMessage('Liz', 'Doug', 'Hello!')
     >>> msg
-    <DirectMessage to='Liz', sender='Doug', text='Hello!'>
+    DirectMessage(to='Liz', sender='Doug', text='Hello!')
     >>> msg.id
     UUID('5a47c192-a50b-11e9-bc30-a434d9ba8632')
 
     See Also
     --------
-    message
+    convert_to_message, message
 
     """
     id: UUID = uuid1()
 
 
+def convert_to_message(cls: type, target_cls: Type[Message]) -> Type[Message]:
+    """Converts the given `cls` to the specified :obj:`Message` class.
+
+    User's should prefer to use the :obj:`message` decorator as it's
+    easier to use and acts purely as a pass-through to this function.
+    This function is provided to allow users to create
+    decorators/functions to convert classes to their own custom
+    :obj:`Message` subclasses.
+
+    Parameters
+    ----------
+    cls : type
+        The class to convert to a :obj:`Message` subclass.
+    target_cls : :obj:`type` of :obj:`Message`
+        The :obj:`Message` (sub)class to convert the given `cls` to.
+
+    Returns
+    -------
+    :obj:`type` of :obj:`Message`
+        The new class, converted to a subclass of :obj:`Message`.
+
+    See Also
+    --------
+    message, Message
+
+    """
+    new_cls = dataclass(cls, frozen=True)
+    if not isinstance(cls, Message):
+        new_cls = type(cls.__name__, (new_cls, Message), {})
+    return new_cls
+
+
 def message(cls: type) -> Type[Message]:
-    """Decorator for easily creating :obj:`Message` sub-classes.
+    """Decorator for easily creating new :obj:`Message` sub-classes.
+
+    Parameters
+    ----------
+    cls : type
+        The class to convert to a :obj:`Message` subclass.
+
+    Returns
+    -------
+    :obj:`type` of :obj:`Message`
+        The new class, converted to a subclass of :obj:`Message`.
 
     Example
     -------
@@ -81,13 +132,10 @@ def message(cls: type) -> Type[Message]:
 
     See Also
     --------
-    Message
+    convert_to_message, Message
 
     """
-    new_cls = dataclass(cls, frozen=True)
-    if not isinstance(cls, Message):
-        new_cls = type(cls.__name__, (new_cls, Message), {})
-    return new_cls
+    return convert_to_message(cls, Message)
 
 
 class MessageHandler(object, metaclass=ABCMeta):

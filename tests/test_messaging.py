@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
+#
+#   This module is part of the Frequent project, Copyright (C) 2019,
+#   Douglas Daly.  The Frequent package is free software, licensed under
+#   the MIT License.
+#
+#   Source Code:
+#       https://github.com/douglasdaly/frequent-py
+#   Documentation:
+#       https://frequent-py.readthedocs.io/en/latest
+#   License:
+#       https://frequent-py.readthedocs.io/en/latest/license.html
+#
 """
-Unit tests for the `messaging` module.
+Unit tests for the messaging module.
 """
 from dataclasses import dataclass
 from uuid import UUID

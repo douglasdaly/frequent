@@ -1,4 +1,6 @@
-Messaging framework skeleton +add
-Unit of work base components +add
-Object repository base components +add
 Fix messaging.message decorator to pass MyPy tests
+Compatibility with py3.6 +change
+Compatibility with py3.5 +change
+Unit tests for messaging module +add
+Unit tests for unit_of_work module +add
+Unit tests for repository module +add

@@ -204,13 +204,16 @@ coverage: ## Runs code coverage checks over the codebase
 # Unit testing
 
 test: ## Run the unit tests over the project
+	$(PYTEST) -n $(PYTEST_CORES)
+
+test-types: ## Run the unit tests (with MyPy type checks) over the project.
 	$(PYTEST) --mypy -n $(PYTEST_CORES)
 
 test-tox: ## Run the tox unit tests over the project
 	$(TOX)
 
 test-watch: ## Run pytest-watch to run tests on project changes
-	$(PYTEST) --mypy -f -q -n $(PYTEST_CORES)
+	$(PYTEST) -f -q -n $(PYTEST_CORES)
 
 tox-rebuild: clean ## Rebuilds the tox environments
 	$(TOX) --recreate --notest

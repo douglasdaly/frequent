@@ -1,48 +1,18 @@
 # -*- coding: utf-8 -*-
 #
-#   This module is part of the frequent project:
+#   This module is part of the Frequent project, Copyright (C) 2019,
+#   Douglas Daly.  The Frequent package is free software, licensed under
+#   the MIT License.
+#
+#   Source Code:
 #       https://github.com/douglasdaly/frequent-py
+#   Documentation:
+#       https://frequent-py.readthedocs.io/en/latest
+#   License:
+#       https://frequent-py.readthedocs.io/en/latest/license.html
 #
 """
 Configuration module for global configuration settings.
-
-These functions can be used to manage a global configuration state for
-your applications.  The :obj:`Configuration` object manages this global
-state and includes the ability to `save` and `load` from a JSON file.
-This class can be modified to serialize to any format you want by
-overloading the `loads` and `dumps` methods (which will automatically
-pass through to the `save` and `load` calls).
-
-
-Examples
---------
-
-Set or get a setting:
-
->>> set_config('files.path', '/home/doug/frequent-files/')
->>> get_config('files.path')
-'/home/doug/frequent-files/'
->>> get_config('files')
-{'path': '/home/doug/frequent-files/'}
-
-Save to file:
-
->>> save_config('/home/doug/config.json')
-
-Load from file:
-
->>> load_config('/home/doug/config.json')
->>> get_config('files.path')
-'/home/doug/frequent-files/'
-
-Set temporary settings:
-
->>> with temp_config(files={'path': '/home/doug/tmp'}):
-...     print(get_config('files.path'))
-'/home/doug/tmp'
->>> get_config('files.path')
-'/home/doug/frequent-files/'
-
 """
 from collections.abc import MutableMapping
 from contextlib import contextmanager
@@ -59,6 +29,7 @@ from typing import Type
 
 __all__ = [
     'Configuration',
+    'clear_config',
     'get_config',
     'load_config',
     'save_config',
@@ -142,7 +113,7 @@ class Configuration(MutableMapping):
         return super().__init__(*args, **kwargs)
 
     def __repr__(self) -> str:
-        return repr(self._storage)
+        return f"<{self.__class__.__name__} settings={repr(self._storage)}>"
 
     def __getitem__(self, key: str) -> Any:
         key, subkey = self._key_helper(key)
@@ -371,7 +342,6 @@ def load_config(
 
     """
     global _GLOBAL_CONFIG
-
     if path:
         _GLOBAL_CONFIG = config_cls.load(path)
     else:
@@ -488,4 +458,3 @@ def temp_config(**settings) -> Configuration:
     finally:
         _GLOBAL_CONFIG = curr_config
     return
-
