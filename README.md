@@ -20,18 +20,21 @@ well as extensive usage documentation and examples) and unit tests.  The
 modules (and their associated unit tests) are entirely self-contained and 
 depend solely on the standard library.
 
-- ``config``: components providing global application configuration settings 
-  management and storage.
+- [``config``](./src/frequent/config.py): components providing global 
+  application configuration settings management and storage.
 
-- ``messaging``: the foundations for building custom messaging frameworks.
+- [``messaging``](./src/frequent/messaging.py): the foundations for building 
+  custom messaging frameworks.
 
-- ``repository``: base class (and exception classes) for implementing the 
-  repository pattern for back-end agnostic object storage.
+- [``repository``](./src/frequent/repository.py): base class (and exception 
+  classes) for implementing the repository pattern for back-end agnostic object 
+  storage.
 
-- ``singleton``: metaclass for creating singleton classes.
+- [``singleton``](./src/frequent/singleton.py): metaclass for creating 
+  singleton classes.
 
-- ``unit_of_work``: base classes for implementing the unit of work pattern for 
-  transactional blocks.
+- [``unit_of_work``](./src/frequent/unit_of_work.py): base classes for 
+  implementing the unit of work pattern for transactional blocks.
 
 
 ## Installation
