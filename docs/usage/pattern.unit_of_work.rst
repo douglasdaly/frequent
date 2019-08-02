@@ -5,26 +5,13 @@ Unit of Work
 The :doc:`frequent.unit_of_work <../api/frequent.unit_of_work>` module provides
 base classes for an implementation of the unit of work pattern.  This pattern
 is (sometimes) used when working with object persistence/storage (e.g. ORMs).
-The advantages of using this pattern when working with object
-persistence/storage are:
-
-.. _advantages:
-
-- The **transactional**-nature of units of work:
-
-    Regardless of the storage back-end implemented with the
-    :obj:`UnitOfWork <frequent.unit_of_work.UnitOfWork>` subclass (provided it
-    can support staging changes to be made, persisting those changes and
-    deleting those changes) all work performed inside a
-    :obj:`UnitOfWork <frequent.unit_of_work.UnitOfWork>` context block is a
-    transaction.
-
-- The **decoupling** of business-logic from storage-system details:
-
-    Regardless of the implementation details for working with the storage
-    system, the way units of work are used remains constant.  This allows you
-    to swap-out (or inject) storage back-ends as needed *without changing the
-    business-logic* of the application.
+The primary advantage of this pattern is the **transactional** nature of units
+of work.  Regardless of the storage back-end implemented with the
+:obj:`UnitOfWork <frequent.unit_of_work.UnitOfWork>` subclass (provided it can
+support staging changes to be made, persisting those changes and deleting those
+changes) all work performed inside a
+:obj:`UnitOfWork <frequent.unit_of_work.UnitOfWork>` context block is a
+transaction.
 
 .. note::
 
@@ -253,15 +240,6 @@ Thus we  have only two possible outcomes when adding ``User`` objects:
 
 The point is, we won't wind up in some in-between state where the user is added
 but the associated profile is not (or vice-versa).
-
-This also allows us to de-couple the details of our storage back-end from the
-business-logic of the application.  We can easily swap out the SQLAlchemy-based
-``MyUnitOfWork`` for any other
-:obj:`UnitOfWork <frequent.unit_of_work.UnitOfWork>` utilizing any type of
-storage system **without requiring any changes** to our ``create_new_user``
-(or any other business) logic.  The
-:obj:`UnitOfWork <frequent.unit_of_work.UnitOfWork>` provides a standardized
-way of interacting with our persistence layer.
 
 
 Useful Links

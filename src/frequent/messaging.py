@@ -19,14 +19,20 @@ from abc import ABCMeta
 from abc import abstractmethod
 from collections.abc import Mapping
 from dataclasses import dataclass
+from functools import partial
 from typing import Any
+from typing import Callable
 from typing import Iterator
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
 from typing import Type
+from typing import Union
 from uuid import UUID
 from uuid import uuid1
+
+
+T_Handler = Union[Callable[['Message'], None], 'MessageHandler']
 
 
 class Message(ABC):
@@ -95,8 +101,8 @@ def convert_to_message(cls: type, target_cls: Type[Message]) -> Type[Message]:
 
     """
     new_cls = dataclass(cls, frozen=True)
-    if not isinstance(cls, Message):
-        new_cls = type(cls.__name__, (new_cls, Message), {})
+    if not isinstance(cls, target_cls):
+        new_cls = type(cls.__name__, (new_cls, target_cls), {})
     return new_cls
 
 
@@ -153,17 +159,27 @@ class MessageHandler(object, metaclass=ABCMeta):
         """
         return self._bus
 
-    def __call__(self, msg: Message) -> None:
-        return self.handle(msg)
+    def __call__(
+        self,
+        msg: Message,
+        successor: Optional[T_Handler] = None
+    ) -> None:
+        return self.handle(msg, successor=successor)
 
     @abstractmethod
-    def handle(self, msg: Message) -> None:
+    def handle(
+        self,
+        msg: Message,
+        successor: Optional[T_Handler] = None
+    ) -> None:
         """Handles the given message object.
 
         Parameters
         ----------
         msg : Message
             The message object to handle.
+        successor : :obj:`MessageHandler` or :obj:`Callable`, optional
+            The next handler in the chain.
 
         """
         pass
@@ -184,8 +200,7 @@ class HandlerRegistry(Mapping):
     >>> registry
     <HandlerRegistry mappings={
        'MyMessage': [1 handler],
-     }
-    >
+    }>
 
     """
 
@@ -202,9 +217,9 @@ class HandlerRegistry(Mapping):
             if len(v) > 1:
                 ret += 's'
             ret += "],"
-        return ret + "\n }\n>"
+        return ret + "\n}>"
 
-    def __getitem__(self, key: Type[Message]) -> Sequence[MessageHandler]:
+    def __getitem__(self, key: Type[Message]) -> Sequence[T_Handler]:
         ret = self._store.get(key)
         if not ret:
             raise NoHandlersFoundException(key)
@@ -219,8 +234,8 @@ class HandlerRegistry(Mapping):
     def add(
         self,
         msg_cls: Type[Message],
-        handler: MessageHandler,
-        *handlers: Tuple[MessageHandler, ...]
+        handler: T_Handler,
+        *handlers: Tuple[T_Handler, ...]
     ) -> None:
         """Adds message handler(s) for the specified message type.
 
@@ -228,12 +243,11 @@ class HandlerRegistry(Mapping):
         ----------
         msg_cls : :obj:`type` of :obj:`Message`
             The message class to add handler mappings for.
-        handler : MessageHandler
-            The message handler instance to map to the given `msg_cls`
-            type.
+        handler : :obj:`MessageHandler` or :obj:`Callable`
+            The message handler to map to the given ``msg_cls`` type.
         handlers : optional
-            Additional message handler instance(s) to map to the given
-            `msg_cls` type.
+            Additional message handler(s) to map to the given
+            ``msg_cls`` type.
 
         """
         if msg_cls not in self._store:
@@ -249,7 +263,7 @@ class HandlerRegistry(Mapping):
         self,
         key: Type[Message],
         default: Any = None
-    ) -> Sequence[MessageHandler]:
+    ) -> Sequence[T_Handler]:
         """Gets the message handler(s) associated with the given type.
 
         Parameters
@@ -261,8 +275,8 @@ class HandlerRegistry(Mapping):
 
         Returns
         -------
-        :obj:`Sequence` of :obj:`MessageHandler` or :obj:`object`
-            The message handlers found (if any) or the `default` value
+        :obj:`Sequence` of :obj:`Callable` or :obj:`object`
+            The message handlers found (if any) or the ``default`` value
             given if no message handlers are found.
 
         """
@@ -271,7 +285,7 @@ class HandlerRegistry(Mapping):
         except NoHandlersFoundException:
             return default
 
-    def remove(self, msg_cls: Type[Message]) -> Sequence[MessageHandler]:
+    def remove(self, msg_cls: Type[Message]) -> Sequence[T_Handler]:
         """Removes all mappings for the specified message type.
 
         Parameters
@@ -281,14 +295,15 @@ class HandlerRegistry(Mapping):
 
         Returns
         -------
-        :obj:`list` of :obj:`MessageHandler`
-            The message handler implementations which were mapped to the
-            specified `msg_cls` type.
+        :obj:`Sequence` of :obj:`Callable`
+            The message handlers which were mapped to the specified
+            ``msg_cls`` type.
 
         Raises
         ------
         NoHandlersFoundException
-            If no handlers were mapped to the specified `msg_cls` type.
+            If no handlers were mapped to the specified ``msg_cls``
+            type.
 
         """
         handlers = self._store.pop(msg_cls)
@@ -344,9 +359,61 @@ class MessageBus(object):
         return
 
 
+def chain(*handlers: Tuple[T_Handler, ...]) -> T_Handler:
+    """Chains multiple handlers together.
+
+    Parameters
+    ----------
+    handlers : :obj:`MessageHandler` or :obj:`Callable`
+        The handlers to chain together, with each being passed the next
+        handler via the ``successor`` keyword-argument.
+
+    Returns
+    -------
+    Callable
+        The chained callable to use for message handling.
+
+    Examples
+    --------
+    To chain together two handlers into one:
+
+    >>> class MessageIdLogger(MessageHandler):
+    ...     def handle(self, msg, successor=None):
+    ...         # Print our message's ID
+    ...         print(msg.id)
+    ...         # ... then call the next handler.
+    ...         return successor(msg)
+    ...
+    >>> def my_next_handler(msg):
+    ...     if msg.code == 42:
+    ...         print('The answer!')
+    ...     else:
+    ...         print('Not the answer...')
+    ...     return
+    >>> chained_handler = chain(MessageIdLogger(), my_next_handler)
+    >>> ans_msg = MyMessage(42)
+    >>> not_ans_msg = MyMessage(41)
+    >>> chained_handler(answer_msg)
+    5a47c192-a50b-11e9-bc30-a434d9ba8632
+    The answer!
+    >>> chained_handler(not_ans_msg)
+    9a47c651-a52b-11f9-bc80-a484d9ba8633
+    Not the answer
+
+    """
+    def _chain(head, tail):
+        if not tail:
+            return head
+        nxt_head, *nxt_tail = tail
+        return partial(head, successor=_chain(nxt_head, nxt_tail))
+
+    head, *tail = handlers
+    return _chain(head, tail)
+
+
 class MessagingException(Exception):
     """
-    Messaging framework exception.
+    Messaging framework base exception.
     """
     pass
 

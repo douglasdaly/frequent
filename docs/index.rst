@@ -65,13 +65,6 @@ depend solely on the standard library.
   implementing the unit of work pattern for transactional blocks.
 
 
-.. warning::
-
-    This library is *currently* only compatible with Python 3.7, efforts are
-    being made to make as much of it (as possible) compatible with 3.6 and 3.5.
-    It will **not** be made compatible with Python 2.
-
-
 Installation
 ============
 
