@@ -70,9 +70,11 @@ target/
 # Pycharm
 .idea
 
+# Neovim
+.vim
+
 # VS Code
 .vscode
-XDG_CACHE_HOME
 
 # Jupyter NB Checkpoints
 .ipynb_checkpoints/

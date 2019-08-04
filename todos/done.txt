@@ -1,2 +1,0 @@
-x 2019-08-02 Allow handlers to be chained in succession @messaging +change
-x 2019-08-02 Allow handlers to be simple functions @messaging +change

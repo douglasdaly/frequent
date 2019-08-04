@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [//]: # (BEGIN)
 
+## \[0.1.1\] - 2019-08-04
+
+### Changed
+
+- Allow handlers to be chained in succession
+- Allow handlers to be simple functions
+
+
 ## \[0.1.0\] - 2019-07-13
 
 ### Added
@@ -17,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit of work base components
 
 
-## \[v0.0.1\] - 2019-06-09
+## \[0.0.1\] - 2019-06-09
 
 ### Added
 
