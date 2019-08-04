@@ -82,8 +82,6 @@ class TestMessageBus(object):
 
     def test_create(self) -> None:
         t_bus = messaging.MessageBus()
-        assert repr(t_bus) == "<MessageBus registry=0>"
-
         t_msg = DecoratedMessage('Liz', 'Doug', 'Hi!')
         try:
             t_bus.handle(t_msg)
@@ -106,7 +104,6 @@ class TestHandlerRegistry(object):
     def test_create(self) -> None:
         registry = messaging.HandlerRegistry()
         assert len(registry) == 0
-        assert repr(registry) == "<HandlerRegistry mappings={}>"
         return
 
     def test_usage(self) -> None:
@@ -119,11 +116,6 @@ class TestHandlerRegistry(object):
         assert len(registry) == 1
         assert registry.get(DecoratedMessage) == [t_handler_a]
         assert registry.get(BasicMessage) is None
-        assert repr(registry) == (
-            "<HandlerRegistry mappings={"
-            "\n   'DecoratedMessage': [1 handler],"
-            "\n }\n>"
-        )
 
         thl = registry.remove(DecoratedMessage)
         assert len(thl) == 1
@@ -136,11 +128,6 @@ class TestHandlerRegistry(object):
         assert len(registry) == 1
         assert len(registry[DecoratedMessage]) == 2
         assert registry.get(DecoratedMessage) == [t_handler_b, t_handler_a]
-        assert repr(registry) == (
-            "<HandlerRegistry mappings={"
-            "\n   'DecoratedMessage': [2 handlers],"
-            "\n }\n>"
-        )
 
         registry.clear()
         assert len(registry) == 0
@@ -150,3 +137,74 @@ class TestHandlerRegistry(object):
         except messaging.NoHandlersFoundException:
             assert True
         return
+
+
+def test_chain():
+    """Tests the :obj:`messaging.chain` method."""
+    msg_q = BasicMessage('DeepThought', -1)
+    msg_a = BasicMessage('The Mice', 42)
+
+    log_ids = []
+    log_res = []
+
+    class LogMsgHandler(messaging.MessageHandler):
+        def handle(
+            self, msg: BasicMessage, successor: messaging.T_Handler = None
+        ) -> None:
+            log_ids.append(msg.id)
+            if successor:
+                successor(msg)
+            return
+
+    def save_result(msg: BasicMessage) -> None:
+        log_res.append(f"{msg.target}: {msg.code}")
+        if msg.code == 42:
+            log_res.append("You're welcome.")
+        return
+
+    bus = messaging.MessageBus()
+    log_handler = LogMsgHandler(bus)
+
+    chained = messaging.chain(log_handler, save_result)
+    chained(msg_q)
+    chained(msg_a)
+
+    assert len(log_ids) == 2
+    assert log_ids[0] == msg_q.id
+    assert log_ids[1] == msg_a.id
+
+    assert len(log_res) == 3
+    assert log_res[0] == f"{msg_q.target}: {msg_q.code}"
+    assert log_res[1] == f"{msg_a.target}: {msg_a.code}"
+    assert log_res[2] == "You're welcome."
+
+    log_ids.clear()
+    log_res.clear()
+
+    def check_target(
+        msg: BasicMessage, successor: messaging.T_Handler
+    ) -> None:
+        if msg.target == 'The Mice':
+            return successor(msg)
+        return
+
+    chained_two = messaging.chain(log_handler, check_target, save_result)
+    chained_two(msg_q)
+    chained_two(msg_a)
+
+    assert len(log_ids) == 2
+    assert log_ids[0] == msg_q.id
+    assert log_ids[1] == msg_a.id
+
+    assert len(log_res) == 2
+    assert log_res[0] == f"{msg_a.target}: {msg_a.code}"
+    assert log_res[1] == "You're welcome."
+
+    chained_break = messaging.chain(save_result, check_target)
+    try:
+        chained_break(msg_a)
+        assert False
+    except TypeError:
+        assert True
+
+    return

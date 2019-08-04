@@ -9,9 +9,6 @@ Contributor email code borrowed from the pip project:
     https://github.com/pypa/pip/blob/master/tasks/generate.py
 
 """
-#
-#   Imports
-#
 import datetime
 import glob
 import os
@@ -289,4 +286,3 @@ def changelog(ctx, draft=False):
         ctx.run('git add %s' % doc_file)
 
     return
-

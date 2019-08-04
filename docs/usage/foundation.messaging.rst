@@ -9,8 +9,12 @@ applications which implement the :doc:`pattern.repository` and/or the
 advantages of using this kind of system are:
 
 - It **decouples** :obj:`Message` objects from the business-logic which handles
-  them (:obj:`MessageHandlers`).
-- It allows **multiple** handlers to act on a single :obj:`Message` object.
+  them (:obj:`MessageHandler` or any :obj:`Callable` taking a message object as
+  its first argument).
+- It allows **chaining** of handlers together in order to call subsequent
+  handlers on a message in a sequential way via a simple :obj:`chain` function.
+- It allows **broadcasting** a single message to multiple handlers (different
+  from sequential chaining).
 - It uses a **centralized** :obj:`MessageBus` to shuttle messages about (you
   *may* want to create your own instance with the :doc:`utility.singleton`
   module to make it a singleton object).
@@ -22,20 +26,20 @@ advantages of using this kind of system are:
 Usage
 =====
 
-The :py:mod:`messaging` module provides all the pieces needed to create custom
-:obj:`Message` and :obj:`MessageHandler` classes as well as the components
-needed to facilitate message passing via the :obj:`MessageBus` and
-:obj:`HandlerRegistry` classes.  It also provides a special decorator,
-:obj:`message`, which is the simplest way to create your own :obj:`Message`
-objects.  In the examples below we'll create a *very basic* messaging framework
-to deliver messages to the appropriate user's mailbox.
+The :obj:`frequent.messaging` module provides all the pieces needed to create
+custom :obj:`Message <frequent.messaging.Message>` and
+:obj:`MessageHandler <frequent.messaging.MessageHandler>` classes as well as
+the components needed to facilitate message passing via the
+:obj:`MessageBus <frequent.messaging.MessageBus>`.  In the examples below
+we'll create a *very basic* messaging framework to deliver messages to the
+appropriate user's mailbox to show some of these features.
 
 
 Creating Message Classes
 ------------------------
 
-To start you'll need to create your own :obj:`Message` classes, which can be
-done using the ``@message`` decorator:
+To start you'll need to create your own ``Message`` classes, which can be done
+using the ``@message`` decorator:
 
 .. code-block:: python
 
@@ -48,14 +52,14 @@ done using the ``@message`` decorator:
         text: str
 
 
-The decorator will automatically add the :obj:`Message` class to the base
+The decorator will automatically add the ``Message`` class to the base
 classes (``__bases__``) of the ``MyMessage`` class and cast the class as a
 `dataclass <https://docs.python.org/3/library/dataclasses.html>`_ via the new
 (as of Python 3.7) standard library.
 
 .. note::
 
-    Each instance of :obj:`Message` has an auto-generated ``id`` attribute (a
+    Each instance of ``Message`` has an auto-generated ``id`` attribute (a
     :obj:`UUID`) generated using ``uuid.uuid1()`` from the standard library.
 
 
@@ -69,15 +73,50 @@ Now let's create a message handler for sending messages by subclassing the
 
     from frequent.messaging import MessageHandler
 
-    def MyMessageHandler(MessageHandler):
+    class MyMessageHandler(MessageHandler):
 
         def __init__(self, bus, mailboxes):
             self._mailboxes = mailboxes
             return super().__init__(bus)
 
-        def handle(self, msg):
+        def handle(self, msg, successor=None):
             self._mailboxes[msg.recipient].append(msg)
             return
+
+We can create the instance now with:
+
+>>> bus = MessageBus()
+>>> mailboxes = []
+>>> my_message_handler = MyMessageHandler(bus, mailboxes)
+
+.. note::
+
+    Handlers can also be functions which take the first argument as the message
+    object and an (optional) keyword-argument ``successor`` for the next
+    handler to call (if chaining handlers together).  The advantage of the
+    :obj:`MessageHandler` object is it's reference to a :obj:`MessageBus` which
+    it can use to transmit additional messages (if needed).
+
+
+Chaining Handlers Together
+--------------------------
+
+Suppose we want to first log a message prior to handling it, we can create a
+function to do that which will then call the next function in the chain:
+
+.. code-block:: python
+
+    from frequent.messaging import chain
+
+    def log_message_handler(msg, successor):
+        print(f"{msg.sender}->{msg.recipient}: '{msg.text}'")
+        return successor(msg)
+
+Now we chain this one together with the previous ``MyMessageHandler``:
+
+>>> chained_handler = chain(log_message_handler, my_message_handler)
+>>> chained_handler(MyMessage('Doug', 'Liz', 'Hello!'))
+Doug->Liz: 'Hello!'
 
 
 Configuring the MessageBus
@@ -130,6 +169,9 @@ Module
 Decorators
     :obj:`message <frequent.messaging.message>`
 
+Functions
+    :obj:`chain <frequent.messaging.chain>`
+
 Abstract Classes
     :obj:`Message <frequent.messaging.Message>`,
     :obj:`MessageHandler <frequent.messaging.MessageHandler>`
@@ -141,3 +183,6 @@ Classes
 Exceptions
     :obj:`MessagingException <frequent.messaging.MessagingException>`,
     :obj:`NoHandlersFoundException <frequent.messaging.NoHandlersFoundException>`
+
+Type Hints
+    :obj:`T_Handler <frequent.messaging.T_Handler>`

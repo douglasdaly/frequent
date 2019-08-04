@@ -65,13 +65,6 @@ depend solely on the standard library.
   implementing the unit of work pattern for transactional blocks.
 
 
-.. warning::
-
-    This library is *currently* only compatible with Python 3.7, efforts are
-    being made to make as much of it (as possible) compatible with 3.6 and 3.5.
-    It will **not** be made compatible with Python 2.
-
-
 Installation
 ============
 
@@ -111,10 +104,10 @@ Indices and tables
 * :ref:`search`
 
 .. |pyvers| image:: https://img.shields.io/pypi/pyversions/frequent.svg
-    :target: https://pypi.org/projects/frequent/
+    :target: https://pypi.org/project/frequent/
     :alt: Supported Python Versions
 .. |pypi| image:: https://img.shields.io/pypi/v/frequent.svg
-    :target: https://pypi.org/projects/frequent/
+    :target: https://pypi.org/project/frequent/
     :alt: PyPI Page
 .. |docs| image:: https://readthedocs.org/projects/frequent-py/badge/?version=latest
     :target: https://frequent-py.readthedocs.io/en/latest/
@@ -126,5 +119,5 @@ Indices and tables
     :target: https://coveralls.io/github/douglasdaly/frequent-py
     :alt: Coverage
 .. |nbsp| unicode:: 0xA0
-   :trim:
+    :trim:
 .. |copy| unicode:: 0xA9 .. copyright sign

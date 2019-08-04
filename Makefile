@@ -145,14 +145,14 @@ clean-py: ## Delete all compiled Python files or temp files
 # Requirements
 
 requirements: ## Installs Python dependencies
-	(export PIP_USE_PEP517=false; $(INSTALL_DEPS))
+	$(INSTALL_DEPS)
 
 update-requirements: -update-requirements-actual generate-requirements ## Updates the project's dependencies
 
 -update-requirements-actual:
-	(export PIP_USE_PEP517=false; $(UPDATE_DEPS))
+	$(UPDATE_DEPS)
 
-generate-requirements:
+generate-requirements: ## Generates the requirements.txt files
 	$(GENERATE_DEPS)
 
 # Documentation

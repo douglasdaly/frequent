@@ -13,6 +13,30 @@
 - Documentation: https://frequent-py.readthedocs.io/
 
 
+## Features
+
+All of the components in ``frequent`` have extensive code documentation (as 
+well as extensive usage documentation and examples) and unit tests.  The 
+modules (and their associated unit tests) are entirely self-contained and 
+depend solely on the standard library.
+
+- [``config``](./src/frequent/config.py): components providing global 
+  application configuration settings management and storage.
+
+- [``messaging``](./src/frequent/messaging.py): the foundations for building 
+  custom messaging frameworks.
+
+- [``repository``](./src/frequent/repository.py): base class (and exception 
+  classes) for implementing the repository pattern for back-end agnostic object 
+  storage.
+
+- [``singleton``](./src/frequent/singleton.py): metaclass for creating 
+  singleton classes.
+
+- [``unit_of_work``](./src/frequent/unit_of_work.py): base classes for 
+  implementing the unit of work pattern for transactional blocks.
+
+
 ## Installation
 
 You have a few options for installing/using `frequent`.  The first is to
@@ -33,16 +57,10 @@ for the component(s) that you need (same goes for the unit tests).
 
 ## About
 
-I found myself copying/re-writing certain components for my projects
-over and over again.  This library is an attempt to take some of the
-components I find myself needing frequently and package them up in a
-convenient and easy-to-use manner.
-
-### Features
-
-- ``config``: for global configuration/settings management.
-- ``messaging``: components for creating custom messaging frameworks.
-- ``singleton``: for singleton classes.
+I found myself copying/re-writing certain components for my projects over and
+over again.  This library is an attempt to take some of these components I find
+myself needing frequently (and re-writing *too frequently*) and package them up
+in a convenient and easy-to-use format.
 
 
 ## License

@@ -2,9 +2,6 @@
 """
 Documentation related tasks.
 """
-#
-#   Imports
-#
 from glob import glob
 import os
 import re
