@@ -2,9 +2,6 @@
 """
 Helper functions for tasks.
 """
-#
-#   Imports
-#
 import os
 import subprocess
 
