@@ -204,9 +204,6 @@ coverage: ## Runs code coverage checks over the codebase
 # Unit testing
 
 test: ## Run the unit tests over the project
-	$(PYTEST) -n $(PYTEST_CORES)
-
-test-types: ## Run the unit tests (with MyPy type checks) over the project.
 	$(PYTEST) --mypy -n $(PYTEST_CORES)
 
 test-tox: ## Run the tox unit tests over the project
@@ -233,4 +230,6 @@ clean-build: ## Clean out the compiled package files
 
 upload: ## Uploads the package to the PyPI server
 	$(TWINE) upload dist/*
+
+release: test-tox build check-build upload ## Tests, builds, checks and then uploads the package to PyPI
 

@@ -46,7 +46,8 @@ setup(
     install_requires=REQUIRES,
     extras_require={
         "test": [
-            "pytest", "pytest-cov", "pytest-timeout", "pytest-xdist"
+            "pytest", "pytest-cov", "pytest-mypy", "pytest-timeout",
+            "pytest-xdist"
         ],
     },
 
