@@ -1,4 +1,5 @@
-Fix messaging.message decorator to pass MyPy tests
+Fix messaging.message decorator to pass MyPy tests +fix
 Unit tests for messaging module +add
 Unit tests for unit_of_work module +add
 Unit tests for repository module +add
+Fix type annotations in Singleton module +fix

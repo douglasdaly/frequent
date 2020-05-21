@@ -1,4 +1,16 @@
 # -*- coding: utf-8 -*-
+#
+#   This module is part of the Frequent project, Copyright (C) 2020,
+#   Douglas Daly.  The Frequent package is free software, licensed under
+#   the MIT License.
+#
+#   Source Code:
+#       https://github.com/douglasdaly/frequent-py
+#   Documentation:
+#       https://frequent-py.readthedocs.io/en/latest
+#   License:
+#       https://frequent-py.readthedocs.io/en/latest/license.html
+#
 """
 Documentation helper utilities.
 
@@ -85,7 +97,7 @@ class NUMPY(_BaseTemplate):
             header = ' '.join(x[0].upper() + x[1:] for x in name.split('_'))
         return (
             f"{header}\n"
-            f"{'_' * len(header)}\n"
+            f"{'-' * len(header)}\n"
             f"{template}\n"
         )
 
@@ -255,6 +267,8 @@ def create_injector(
 
     """
     return partial(
-        _doc_inject_base, templates, default_template=default_template,
-        **defaults
+        _doc_inject_base,
+        templates,
+        default_template=default_template,
+        **defaults,
     )

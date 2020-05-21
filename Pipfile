@@ -26,3 +26,7 @@ sphinx-rtd-theme = "*"
 towncrier = "*"
 tox = "*"
 twine = "*"
+
+[requires]
+python_version = "3.7"
+
