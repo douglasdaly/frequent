@@ -4,4 +4,4 @@ frequent
 
 Frequently used components for Python projects.
 """
-from .__version__ import __version__  # noqa
+from frequent.__version__ import __version__  # noqa
