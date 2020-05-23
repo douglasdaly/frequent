@@ -19,13 +19,7 @@ from contextlib import contextmanager
 from copy import copy
 from functools import wraps
 import json
-from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import Iterator as T_Iterator
-from typing import Optional
-from typing import Tuple
-from typing import Type
+import typing as tp
 
 __all__ = [
     'Configuration',
@@ -38,7 +32,7 @@ __all__ = [
 ]
 
 
-_GLOBAL_CONFIG: Optional['Configuration'] = None
+_GLOBAL_CONFIG: tp.Optional['Configuration'] = None
 
 
 def _make_sentinel(name: str = '_MISSING') -> 'Sentinel':
@@ -109,20 +103,26 @@ class Configuration(MutableMapping):
     __key_seperator__ = '.'
 
     def __init__(self, *args, **kwargs) -> None:
-        self._storage = dict()
+        self._storage = {}
         return super().__init__(*args, **kwargs)
+
+    def __getstate__(self) -> tp.Dict[str, tp.Any]:
+        return {'_storage': self._storage}
+
+    def __setstate__(self, state: tp.Dict[str, tp.Any]) -> None:
+        self._storage = state['_storage']
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} settings={repr(self._storage)}>"
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: str) -> tp.Any:
         key, subkey = self._key_helper(key)
         rv = self._storage[key]
         if subkey:
             rv = rv[subkey]
         return rv
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: str, value: tp.Any) -> None:
         key, subkey = self._key_helper(key)
         if isinstance(value, dict):
             value = self.__class__(value)
@@ -145,10 +145,10 @@ class Configuration(MutableMapping):
     def __len__(self) -> int:
         return len(self._storage)
 
-    def __iter__(self) -> T_Iterator:
+    def __iter__(self) -> tp.Iterator:
         return iter(self._storage)
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> tp.Any:
         try:
             rv = super().__getattribute__(name)
         except AttributeError as ex:
@@ -158,7 +158,7 @@ class Configuration(MutableMapping):
                 raise ex
         return rv
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: tp.Any) -> None:
         if name != '_storage' and name not in self.__dict__:
             return self.__setitem__(name, value)
         return super().__setattr__(name, value)
@@ -278,7 +278,7 @@ class Configuration(MutableMapping):
         return cls.loads(''.join(text), **kwargs)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Configuration':
+    def from_dict(cls, data: tp.Dict[str, tp.Any]) -> 'Configuration':
         """Creates a configuration object from the given :obj:`dict`.
 
         Parameters
@@ -299,7 +299,7 @@ class Configuration(MutableMapping):
             rv[k] = v
         return rv
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> tp.Dict[str, tp.Any]:
         """Converts this configuration object to a standard :obj:`dict`.
 
         Returns
@@ -316,7 +316,7 @@ class Configuration(MutableMapping):
         return rv
 
     @classmethod
-    def _key_helper(cls, key: str) -> Tuple[str, str]:
+    def _key_helper(cls, key: str) -> tp.Tuple[str, str]:
         """Splits the given key into a key & subkey"""
         if cls.__key_seperator__ in key:
             r_key, r_subkey = key.split(cls.__key_seperator__, 1)
@@ -327,7 +327,8 @@ class Configuration(MutableMapping):
 
 
 def load_config(
-    path: str = None, config_cls: Type[Configuration] = Configuration
+    path: str = None,
+    config_cls: tp.Type[Configuration] = Configuration,
 ) -> None:
     """Loads the global configuration from the given file path.
 
@@ -349,7 +350,7 @@ def load_config(
     return
 
 
-def _ensure_config(f: Callable) -> Callable:
+def _ensure_config(f: tp.Callable) -> tp.Callable:
     @wraps(f)
     def wrapper(*args, **kwargs):
         global _GLOBAL_CONFIG
@@ -374,7 +375,7 @@ def save_config(path: str) -> None:
 
 
 @_ensure_config
-def get_config(name: str = None, default: Any = _MISSING) -> Any:
+def get_config(name: str = None, default: tp.Any = _MISSING) -> tp.Any:
     """Gets the global configuration.
 
     Parameters
@@ -402,7 +403,7 @@ def get_config(name: str = None, default: Any = _MISSING) -> Any:
 
 
 @_ensure_config
-def set_config(name: str, value: Any) -> None:
+def set_config(name: str, value: tp.Any) -> None:
     """Sets a configuration setting.
 
     Parameters
@@ -429,7 +430,7 @@ def clear_config() -> None:
 
 @contextmanager
 @_ensure_config
-def temp_config(**settings) -> Configuration:
+def temp_config(**settings: tp.Dict[str, tp.Any]) -> Configuration:
     """Gets a context with a temporary configuration.
 
     Any changes made to the configuration via calls to :obj:`set_config`
