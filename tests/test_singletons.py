@@ -46,7 +46,7 @@ class AnotherSingleClass(SingleClass):
         return super().__init__(*args, **kwargs)
 
 
-class TestSingleton(object):
+class SingletonTester(object):
     """
     Tests for the :obj:`Singleton` metaclass.
     """

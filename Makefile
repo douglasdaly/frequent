@@ -204,6 +204,9 @@ coverage: ## Runs code coverage checks over the codebase
 # Unit testing
 
 test: ## Run the unit tests over the project
+	$(PYTEST) -n $(PYTEST_CORES)
+
+test-mypy: ## Run the unit tests (with type checking)
 	$(PYTEST) --mypy -n $(PYTEST_CORES)
 
 test-tox: ## Run the tox unit tests over the project

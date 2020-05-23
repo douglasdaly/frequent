@@ -41,7 +41,7 @@ class DecoratedHandler(messaging.MessageHandler):
         return
 
 
-class TestMessage(object):
+class MessageTester(object):
     """
     Tests for the base :obj:`Message` object.
     """
@@ -75,7 +75,7 @@ def TestNoHandlersFoundException(object):
         return
 
 
-class TestMessageBus(object):
+class MessageBusTester(object):
     """
     Tests for the :obj:`MessageBus` class.
     """
@@ -96,7 +96,7 @@ class TestMessageBus(object):
         return
 
 
-class TestHandlerRegistry(object):
+class HandlerRegistryTester(object):
     """
     Tests for the :obj:`HandlerRegistry` class.
     """

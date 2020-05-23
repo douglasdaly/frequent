@@ -20,7 +20,7 @@ from tempfile import mkstemp
 from frequent import config
 
 
-class TestConfiguration(object):
+class ConfigurationTester(object):
     """
     Tests for the :obj:`Configuration` class.
     """
@@ -137,6 +137,3 @@ def test_temp_config():
     assert config.get_config('a') == 42
 
     return
-
-
-
